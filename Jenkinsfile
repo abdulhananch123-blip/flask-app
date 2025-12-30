@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         VENV = "venv"
-        DEPLOY_DIR = "/tmp/flask_deploy"
+        DEPLOY_DIR = "D:\\temp\\flask_deploy"
     }
 
     stages {
@@ -18,11 +18,10 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo "Installing Python dependencies..."
-                sh '''
-                python -m venv $VENV
-                . $VENV/bin/activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
+                bat '''
+                python -m venv %VENV%
+                %VENV%\\Scripts\\python -m pip install --upgrade pip
+                %VENV%\\Scripts\\pip install -r requirements.txt
                 '''
             }
         }
@@ -30,9 +29,8 @@ pipeline {
         stage('Run Unit Tests') {
             steps {
                 echo "Running unit tests with pytest..."
-                sh '''
-                . $VENV/bin/activate
-                pytest
+                bat '''
+                %VENV%\\Scripts\\pytest
                 '''
             }
         }
@@ -40,10 +38,10 @@ pipeline {
         stage('Build Application') {
             steps {
                 echo "Building application..."
-                sh '''
-                mkdir -p build
-                cp -r *.py build/
-                cp -r requirements.txt build/
+                bat '''
+                if not exist build mkdir build
+                copy *.py build
+                copy requirements.txt build
                 '''
             }
         }
@@ -51,9 +49,9 @@ pipeline {
         stage('Deploy Application (Simulated)') {
             steps {
                 echo "Simulating deployment..."
-                sh '''
-                mkdir -p $DEPLOY_DIR
-                cp -r build/* $DEPLOY_DIR/
+                bat '''
+                if not exist %DEPLOY_DIR% mkdir %DEPLOY_DIR%
+                xcopy build %DEPLOY_DIR% /E /Y
                 '''
             }
         }
