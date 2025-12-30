@@ -30,6 +30,7 @@ pipeline {
             steps {
                 echo "Running unit tests with pytest..."
                 bat '''
+                set PYTHONPATH=%CD%
                 %VENV%\\Scripts\\pytest
                 '''
             }
